@@ -1,6 +1,6 @@
 # postfix-redis Cookbook
 
-TODO: Installs postfix and redis. Sets up postfix to forward all emails to user 'toredis' which stores all emails to redis.
+Installs postfix and redis. Sets up postfix to forward all emails to user 'toredis' which stores all emails to redis.
 
 ### Platforms
 
@@ -24,6 +24,12 @@ Just include `postfix-redis` in your node's `run_list`:
   ]
 }
 ```
+## Script usage
+
+```
+cd /home/toredis
+# Read messages from redis:
+./store_to_redis.py -r email@domain.com
 
 Authors: Sebastian Vaisov
 
