@@ -1,0 +1,52 @@
+#!/bin/python
+
+import argparse
+import fileinput
+import sys
+import email
+import redis
+
+parser = argparse.ArgumentParser(description='Store and get e-mails to/from redis.')
+parser.add_argument('-r', '--read', help='Recipient address', nargs=1, metavar='Recipient')
+parser.add_argument('-d', '--data', help='Mail body with headers', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
+args = parser.parse_args()
+
+redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+email_parser = email.FeedParser.FeedParser()
+
+def store_email(data):
+  try:
+    for line in data:
+      email_parser.feed(line)
+    email = email_parser.close()
+    redis.incr('mail:id')
+    id = redis.get('mail:id')
+    redis.hmset(id, {'To:':email['To'],'From:':email['From'], 'Date:':email['Date'], 'Message:':email.get_payload()})
+  except:
+    print 'Unexpected error:', sys.exc_info()[0]
+    exit(1)
+  return 'Message was stored successfully'
+
+
+def read_email(rcp):
+  output = ""
+  try:
+    for key in redis.keys():
+      if key != 'mail:id':
+        if redis.hget(key, 'To:') == rcp:
+#          output += "-------------------------------------\n"
+          mail = redis.hgetall(key)
+          output += 'Date: ' + mail['Date:'] + '\n'
+          output += 'From: ' + mail['From:'] + '\n'
+          output += 'Message: \n' + mail['Message:'] + '\n'
+          output += "-------------------------------------\n"
+  except:
+    print 'Unexpected error:', sys.exc_info()[0]
+    exit(1)
+  return output
+
+
+if args.read:
+  print read_email(args.read[0])
+elif args.data != "":
+  store_email(args.data.readlines())
