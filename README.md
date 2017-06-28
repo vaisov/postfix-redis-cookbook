@@ -30,6 +30,7 @@ Just include `postfix-redis` in your node's `run_list`:
 cd /home/toredis
 # Read messages from redis:
 ./store_to_redis.py -r email@domain.com
+```
 
 Authors: Sebastian Vaisov
 
