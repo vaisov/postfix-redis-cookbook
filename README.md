@@ -32,5 +32,4 @@ cd /home/toredis
 ./store_to_redis.py -r email@domain.com
 ```
 
-Authors: Sebastian Vaisov
-
+Author: Sebastian Vaisov
