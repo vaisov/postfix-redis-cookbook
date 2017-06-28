@@ -34,7 +34,6 @@ def read_email(rcp):
     for key in redis.keys():
       if key != 'mail:id':
         if redis.hget(key, 'To:') == rcp:
-#          output += "-------------------------------------\n"
           mail = redis.hgetall(key)
           output += 'Date: ' + mail['Date:'] + '\n'
           output += 'From: ' + mail['From:'] + '\n'
